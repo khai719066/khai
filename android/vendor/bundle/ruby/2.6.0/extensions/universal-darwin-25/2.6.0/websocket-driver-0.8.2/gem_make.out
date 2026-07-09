@@ -1,0 +1,16 @@
+current directory: /Users/nguyenquangkhai/kido/MyApp/android/vendor/bundle/ruby/2.6.0/gems/websocket-driver-0.8.2/ext/websocket-driver
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260709-46433-1pkw1fz.rb extconf.rb
+creating Makefile
+
+current directory: /Users/nguyenquangkhai/kido/MyApp/android/vendor/bundle/ruby/2.6.0/gems/websocket-driver-0.8.2/ext/websocket-driver
+make "DESTDIR=" clean
+
+current directory: /Users/nguyenquangkhai/kido/MyApp/android/vendor/bundle/ruby/2.6.0/gems/websocket-driver-0.8.2/ext/websocket-driver
+make "DESTDIR="
+compiling websocket_mask.c
+linking shared-object websocket_mask.bundle
+ld: warning: search path '/AppleInternal/Library/BuildRoots/4~CNqOugC2VOzH0AooiFHluC0Rc_Uuhf7Y_i2OsEM/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.Internal.sdk/usr/local/lib' not found
+
+current directory: /Users/nguyenquangkhai/kido/MyApp/android/vendor/bundle/ruby/2.6.0/gems/websocket-driver-0.8.2/ext/websocket-driver
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 websocket_mask.bundle ./.gem.20260709-46433-m4burf

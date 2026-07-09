@@ -1,0 +1,74 @@
+/Applications/Xcode.app/Contents/Developer/usr/bin/make  all-recursive
+Making all in include
+Making all in libxml
+make[3]: Nothing to be done for `all'.
+make[3]: Nothing to be done for `all-am'.
+Making all in .
+  CC       SAX.lo
+  CC       entities.lo
+entities.c:947:31: warning: cast from 'xmlEntityPtr (*)(xmlEntityPtr)' (aka 'struct _xmlEntity *(*)(struct _xmlEntity *)') to 'xmlHashCopier' (aka 'void *(*)(void *, unsigned char *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  947 |     return(xmlHashCopy(table, (xmlHashCopier) xmlCopyEntity));
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+entities.c:1101:24: warning: cast from 'void (*)(xmlEntityPtr, xmlBufferPtr)' (aka 'void (*)(struct _xmlEntity *, struct _xmlBuffer *)') to 'xmlHashScanner' (aka 'void (*)(void *, void *, unsigned char *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+ 1101 |     xmlHashScan(table, (xmlHashScanner)xmlDumpEntityDeclScan, buf);
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 warnings generated.
+  CC       encoding.lo
+encoding.c:491:26: warning: cast from 'const unsigned char *' to 'unsigned short *' increases required alignment from 1 to 2 [-Wcast-align]
+  491 |     unsigned short* in = (unsigned short*) inb;
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+encoding.c:573:27: warning: cast from 'unsigned char *' to 'unsigned short *' increases required alignment from 1 to 2 [-Wcast-align]
+  573 |     unsigned short* out = (unsigned short*) outb;
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+encoding.c:729:26: warning: cast from 'const unsigned char *' to 'unsigned short *' increases required alignment from 1 to 2 [-Wcast-align]
+  729 |     unsigned short* in = (unsigned short*) inb;
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+encoding.c:815:27: warning: cast from 'unsigned char *' to 'unsigned short *' increases required alignment from 1 to 2 [-Wcast-align]
+  815 |     unsigned short* out = (unsigned short*) outb;
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+encoding.c:2410:12: warning: variable 'writtentot' set but not used [-Wunused-but-set-variable]
+ 2410 |     size_t writtentot = 0;
+      |            ^
+encoding.c:2641:9: warning: variable 'writtentot' set but not used [-Wunused-but-set-variable]
+ 2641 |     int writtentot = 0;
+      |         ^
+encoding.c:2643:9: warning: variable 'output' set but not used [-Wunused-but-set-variable]
+ 2643 |     int output = 0;
+      |         ^
+7 warnings generated.
+  CC       error.lo
+error.c:634:26: warning: cast from 'int (*)(FILE *restrict, const char *restrict, ...)' (aka 'int (*)(struct __sFILE *restrict, const char *restrict, ...)') to 'xmlGenericErrorFunc' (aka 'void (*)(void *, const char *, ...)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  634 |     else if ((channel == (xmlGenericErrorFunc) fprintf) ||
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
+  CC       parserInternals.lo
+parserInternals.c:1800:40: warning: cast from 'xmlFreeFunc' (aka 'void (*)(void *)') to 'xmlHashDeallocator' (aka 'void (*)(void *, unsigned char *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+ 1800 |         xmlHashFree(ctxt->attsDefault, (xmlHashDeallocator) xmlFree);
+      |                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
+  CC       parser.lo
+parser.c:2083:68: warning: cast from 'int (*)(void)' to 'xmlInputReadCallback' (aka 'int (*)(void *, char *, int)') converts to incompatible function type [-Wcast-function-type-mismatch]
+ 2083 |          ((ctxt->input->buf) && (ctxt->input->buf->readcallback != (xmlInputReadCallback) xmlNop)) &&
+      |                                                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+parser.c:15125:40: warning: cast from 'xmlFreeFunc' (aka 'void (*)(void *)') to 'xmlHashDeallocator' (aka 'void (*)(void *, unsigned char *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+ 15125 |         xmlHashFree(ctxt->attsDefault, (xmlHashDeallocator) xmlFree);
+       |                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 warnings generated.
+  CC       tree.lo
+  CC       hash.lo
+hash.c:916:9: warning: cast from 'xmlHashScanner' (aka 'void (*)(void *, void *, unsigned char *)') to 'xmlHashScannerFull' (aka 'void (*)(void *, void *, const unsigned char *, const unsigned char *, const unsigned char *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  916 |                       (xmlHashScannerFull) f, data);
+      |                       ^~~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
+  CC       list.lo
+  CC       xmlIO.lo
+xmlIO.c:1450:52: error: use of undeclared identifier 'LZMA_OK'
+ 1450 |     ret =  (__libxml2_xzclose((xzFile) context) == LZMA_OK ) ? 0 : -1;
+      |                                                    ^~~~~~~
+xmlIO.c:3036:22: warning: cast from 'int (*)(void)' to 'xmlInputReadCallback' (aka 'int (*)(void *, char *, int)') converts to incompatible function type [-Wcast-function-type-mismatch]
+ 3036 |         ret->readcallback = (xmlInputReadCallback) xmlNop;
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 warning and 1 error generated.
+make[2]: *** [xmlIO.lo] Error 1
+make[1]: *** [all-recursive] Error 1
+make: *** [all] Error 2
