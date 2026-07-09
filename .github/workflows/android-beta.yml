@@ -19,6 +19,12 @@ jobs:
       - name: Install Node Modules
         run: yarn install
 
+      # Bước 2.5: Copy các file bảo mật bị Git bỏ qua (keystore, local.properties) từ thư mục gốc
+      - name: Copy Keystore and local.properties
+        run: |
+          cp /Users/nguyenquangkhai/kido/MyApp/android/local.properties android/local.properties
+          cp /Users/nguyenquangkhai/kido/MyApp/android/app/my-upload-key.keystore android/app/my-upload-key.keystore
+
       # Bước 3: Chạy Fastlane để build và upload
       - name: Build and Upload to Firebase
         env:
