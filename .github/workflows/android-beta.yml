@@ -1,0 +1,29 @@
+name: Android Beta Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    # Lệnh này chỉ định GitHub Action chạy trên máy local của bạn (self-hosted runner)
+    runs-on: self-hosted
+
+    steps:
+      # Bước 1: Kéo code mới nhất từ nhánh master về
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Bước 2: Cài đặt các thư viện React Native (nếu có thay đổi)
+      - name: Install Node Modules
+        run: yarn install
+
+      # Bước 3: Chạy Fastlane để build và upload
+      - name: Build and Upload to Firebase
+        env:
+          # Đọc token từ mục Settings > Secrets của GitHub
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          cd android
+          fastlane beta
