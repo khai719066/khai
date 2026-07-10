@@ -16,6 +16,12 @@
 default_platform(:android)
 
 platform :android do
+  def require_env!(key)
+    value = ENV[key]
+    UI.user_error!("Missing required environment variable #{key}") if value.nil? || value.strip.empty?
+    value
+  end
+
   def release_build
     gradle(
       task: "clean assembleRelease",
@@ -31,11 +37,12 @@ platform :android do
   desc "Submit a new Beta Build to Firebase App Distribution"
   lane :beta do
     ENV["NODE_BINARY"] ||= sh("which node").strip
+    firebase_token = require_env!("FIREBASE_TOKEN")
     release_build
     
     firebase_app_distribution(
       app: "1:686188358517:android:2a56d6d01726b02525013c",
-      firebase_cli_token: ENV["FIREBASE_TOKEN"],
+      firebase_cli_token: firebase_token,
       apk_path: "app/build/outputs/apk/release/app-release.apk",
       release_notes: "Bản build mới từ Fastlane",
       debug: true

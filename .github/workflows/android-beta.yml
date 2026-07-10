@@ -38,7 +38,10 @@ jobs:
           ruby -v
           which bundle || true
           bundle -v || true
+          if [ -n "${FIREBASE_TOKEN:-}" ]; then echo "FIREBASE_TOKEN is set"; else echo "FIREBASE_TOKEN is missing"; fi
           sed -n '20,40p' android/fastlane/Fastfile
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
       # Bước 2: Cài đặt các thư viện React Native (nếu có thay đổi)
       - name: Install Node Modules
