@@ -19,7 +19,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+
+      - name: Export Node binary for Gradle/Fastlane
+        run: |
+          echo "NODE_BINARY=$(which node)" >> "$GITHUB_ENV"
+          echo "$(dirname "$(which node)")" >> "$GITHUB_PATH"
 
       # Bước 2: Cài đặt các thư viện React Native (nếu có thay đổi)
       - name: Install Node Modules
@@ -36,6 +41,7 @@ jobs:
         env:
           # Đọc token từ mục Settings > Secrets của GitHub
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          NODE_BINARY: ${{ env.NODE_BINARY }}
         run: |
           cd android
           fastlane beta
