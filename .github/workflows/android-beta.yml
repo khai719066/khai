@@ -23,12 +23,32 @@ jobs:
 
       - name: Export Node binary for Gradle/Fastlane
         run: |
+          echo "/opt/homebrew/opt/ruby/bin" >> "$GITHUB_PATH"
           echo "NODE_BINARY=$(which node)" >> "$GITHUB_ENV"
           echo "$(dirname "$(which node)")" >> "$GITHUB_PATH"
+
+      - name: Debug build environment
+        run: |
+          pwd
+          git rev-parse HEAD
+          which node
+          node -v
+          echo "$NODE_BINARY"
+          which ruby
+          ruby -v
+          which bundle || true
+          bundle -v || true
+          sed -n '20,40p' android/fastlane/Fastfile
 
       # Bước 2: Cài đặt các thư viện React Native (nếu có thay đổi)
       - name: Install Node Modules
         run: yarn install
+
+      - name: Install Fastlane gems
+        working-directory: android
+        run: |
+          bundle config set path vendor/bundle
+          bundle install
 
       # Bước 2.5: Copy các file bảo mật bị Git bỏ qua (keystore, local.properties) từ thư mục gốc
       - name: Copy Keystore and local.properties
@@ -44,4 +64,4 @@ jobs:
           NODE_BINARY: ${{ env.NODE_BINARY }}
         run: |
           cd android
-          fastlane beta
+          bundle exec fastlane beta

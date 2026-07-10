@@ -16,6 +16,13 @@
 default_platform(:android)
 
 platform :android do
+  def release_build
+    gradle(
+      task: "clean assembleRelease",
+      flags: "--stacktrace --warning-mode all"
+    )
+  end
+
   desc "Runs all the tests"
   lane :test do
     gradle(task: "assembleRelease")
@@ -24,7 +31,7 @@ platform :android do
   desc "Submit a new Beta Build to Firebase App Distribution"
   lane :beta do
     ENV["NODE_BINARY"] ||= sh("which node").strip
-    gradle(task: "clean assembleRelease")
+    release_build
     
     firebase_app_distribution(
       app: "1:686188358517:android:2a56d6d01726b02525013c",
@@ -38,7 +45,7 @@ platform :android do
   desc "Deploy a new version to the Google Play"
   lane :deploy do
     ENV["NODE_BINARY"] ||= sh("which node").strip
-    gradle(task: "clean assembleRelease")
+    release_build
     upload_to_play_store
   end
 end
