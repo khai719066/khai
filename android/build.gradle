@@ -14,8 +14,25 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("com.google.gms:google-services:4.4.3")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+def configuredNodeBinary = file("node-binary.sh").absolutePath
+
+subprojects { subproject ->
+    subproject.plugins.withId("com.facebook.react") {
+        subproject.tasks.withType(com.facebook.react.tasks.GenerateCodegenSchemaTask).configureEach {
+            nodeExecutableAndArgs.set([configuredNodeBinary])
+        }
+        subproject.tasks.withType(com.facebook.react.tasks.GenerateCodegenArtifactsTask).configureEach {
+            nodeExecutableAndArgs.set([configuredNodeBinary])
+        }
+        subproject.tasks.withType(com.facebook.react.tasks.BundleHermesCTask).configureEach {
+            nodeExecutableAndArgs.set([configuredNodeBinary])
+        }
+    }
+}

@@ -22,37 +22,87 @@ platform :android do
     value
   end
 
-  def release_build
+  def environment_config(environment)
+    configs = {
+      "dev" => {
+        gradle_task: "clean assembleDevRelease",
+        app_id_env: "FIREBASE_APP_ID_DEV",
+        apk_path: "app/build/outputs/apk/dev/release/myapp-dev-release.apk",
+        package_name: "com.cicd.app.dev"
+      },
+      "staging" => {
+        gradle_task: "clean assembleStagingRelease",
+        app_id_env: "FIREBASE_APP_ID_STAGING",
+        apk_path: "app/build/outputs/apk/staging/release/myapp-staging-release.apk",
+        package_name: "com.cicd.app.staging"
+      },
+      "prod" => {
+        gradle_task: "clean assembleProdRelease",
+        app_id_env: "FIREBASE_APP_ID_PROD",
+        apk_path: "app/build/outputs/apk/prod/release/myapp-prod-release.apk",
+        package_name: "com.cicd.app"
+      }
+    }
+
+    config = configs[environment]
+    UI.user_error!("Unknown environment #{environment}") if config.nil?
+    config
+  end
+
+  def release_build(environment)
+    config = environment_config(environment)
     gradle(
-      task: "clean assembleRelease",
+      task: config[:gradle_task],
       flags: "--stacktrace --warning-mode all"
+    )
+  end
+
+  def distribute_build(environment)
+    ENV["NODE_BINARY"] ||= sh("which node").strip
+    firebase_token = require_env!("FIREBASE_TOKEN")
+    config = environment_config(environment)
+    firebase_app_id = require_env!(config[:app_id_env])
+
+    release_build(environment)
+
+    firebase_app_distribution(
+      app: firebase_app_id,
+      firebase_cli_token: firebase_token,
+      apk_path: config[:apk_path],
+      release_notes: "Ban build #{environment} moi tu Fastlane",
+      debug: true
     )
   end
 
   desc "Runs all the tests"
   lane :test do
-    gradle(task: "assembleRelease")
+    gradle(task: "assembleProdRelease")
   end
 
-  desc "Submit a new Beta Build to Firebase App Distribution"
+  desc "Submit a new Dev build to Firebase App Distribution"
+  lane :beta_dev do
+    distribute_build("dev")
+  end
+
+  desc "Submit a new Staging build to Firebase App Distribution"
+  lane :beta_staging do
+    distribute_build("staging")
+  end
+
+  desc "Submit a new Prod build to Firebase App Distribution"
+  lane :beta_prod do
+    distribute_build("prod")
+  end
+
+  desc "Backward-compatible prod beta lane"
   lane :beta do
-    ENV["NODE_BINARY"] ||= sh("which node").strip
-    firebase_token = require_env!("FIREBASE_TOKEN")
-    release_build
-    
-    firebase_app_distribution(
-      app: "1:686188358517:android:2a56d6d01726b02525013c",
-      firebase_cli_token: firebase_token,
-      apk_path: "app/build/outputs/apk/release/app-release.apk",
-      release_notes: "Bản build mới từ Fastlane",
-      debug: true
-    )
+    distribute_build("prod")
   end
 
   desc "Deploy a new version to the Google Play"
   lane :deploy do
     ENV["NODE_BINARY"] ||= sh("which node").strip
-    release_build
+    release_build("prod")
     upload_to_play_store
   end
 end

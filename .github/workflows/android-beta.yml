@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Android environment to distribute
+        required: true
+        default: prod
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
 
 jobs:
   build:
@@ -39,9 +50,11 @@ jobs:
           which bundle || true
           bundle -v || true
           if [ -n "${FIREBASE_TOKEN:-}" ]; then echo "FIREBASE_TOKEN is set"; else echo "FIREBASE_TOKEN is missing"; fi
+          echo "Target environment: ${TARGET_ENVIRONMENT}"
           sed -n '20,40p' android/fastlane/Fastfile
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'prod' }}
 
       # Bước 2: Cài đặt các thư viện React Native (nếu có thay đổi)
       - name: Install Node Modules
@@ -62,9 +75,12 @@ jobs:
       # Bước 3: Chạy Fastlane để build và upload
       - name: Build and Upload to Firebase
         env:
-          # Đọc token từ mục Settings > Secrets của GitHub
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID_DEV: ${{ secrets.FIREBASE_APP_ID_DEV }}
+          FIREBASE_APP_ID_STAGING: ${{ secrets.FIREBASE_APP_ID_STAGING }}
+          FIREBASE_APP_ID_PROD: ${{ secrets.FIREBASE_APP_ID_PROD }}
           NODE_BINARY: ${{ env.NODE_BINARY }}
+          TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'prod' }}
         run: |
           cd android
-          bundle exec fastlane beta
+          bundle exec fastlane "beta_${TARGET_ENVIRONMENT}"

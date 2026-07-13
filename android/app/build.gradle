@@ -1,14 +1,15 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
 
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
-    // Prefer an explicit Node binary in CI so Gradle codegen tasks do not rely on PATH.
-    def nodeBinary = System.getenv("NODE_BINARY") ?: "node"
+    // Route all Gradle Node invocations through the wrapper so CI/local shells resolve the same binary.
+    def nodeBinary = file("../node-binary.sh").absolutePath
     nodeExecutableAndArgs = [nodeBinary]
 
     /* Folders */
@@ -83,11 +84,36 @@ android {
 
     namespace "com.myapp"
     defaultConfig {
-        applicationId "com.cicd.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+    }
+    flavorDimensions "environment"
+    productFlavors {
+        dev {
+            dimension "environment"
+            applicationId "com.cicd.app.dev"
+            versionNameSuffix "-dev"
+            resValue "string", "app_name", "MyApp Dev"
+            buildConfigField "String", "ENVIRONMENT", "\"dev\""
+            buildConfigField "String", "API_BASE_URL", "\"${DEV_API_BASE_URL}\""
+        }
+        staging {
+            dimension "environment"
+            applicationId "com.cicd.app.staging"
+            versionNameSuffix "-staging"
+            resValue "string", "app_name", "MyApp Staging"
+            buildConfigField "String", "ENVIRONMENT", "\"staging\""
+            buildConfigField "String", "API_BASE_URL", "\"${STAGING_API_BASE_URL}\""
+        }
+        prod {
+            dimension "environment"
+            applicationId "com.cicd.app"
+            resValue "string", "app_name", "MyApp"
+            buildConfigField "String", "ENVIRONMENT", "\"prod\""
+            buildConfigField "String", "API_BASE_URL", "\"${PROD_API_BASE_URL}\""
+        }
     }
     signingConfigs {
         debug {
@@ -115,6 +141,12 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def flavorName = variant.flavorName ?: "default"
+            output.outputFileName = "myapp-${flavorName}-${variant.buildType.name}.apk"
         }
     }
 }
