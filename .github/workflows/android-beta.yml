@@ -3,7 +3,8 @@ name: Android Beta Build
 on:
   push:
     branches:
-      - master
+      - develop
+      - staging
   workflow_dispatch:
     inputs:
       environment:
@@ -20,9 +21,11 @@ jobs:
   build:
     # Lệnh này chỉ định GitHub Action chạy trên máy local của bạn (self-hosted runner)
     runs-on: self-hosted
+    env:
+      TARGET_ENVIRONMENT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.ref_name == 'develop' && 'dev' || (github.ref_name == 'staging' && 'staging' || 'prod')) }}
 
     steps:
-      # Bước 1: Kéo code mới nhất từ nhánh master về
+      # Bước 1: Kéo code mới nhất từ nhánh đang chạy workflow
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -54,7 +57,7 @@ jobs:
           sed -n '20,40p' android/fastlane/Fastfile
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'prod' }}
+          TARGET_ENVIRONMENT: ${{ env.TARGET_ENVIRONMENT }}
 
       # Bước 2: Cài đặt các thư viện React Native (nếu có thay đổi)
       - name: Install Node Modules
@@ -74,13 +77,12 @@ jobs:
 
       # Bước 3: Chạy Fastlane để build và upload
       - name: Build and Upload to Firebase
+        working-directory: android
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID_DEV: ${{ secrets.FIREBASE_APP_ID_DEV }}
           FIREBASE_APP_ID_STAGING: ${{ secrets.FIREBASE_APP_ID_STAGING }}
           FIREBASE_APP_ID_PROD: ${{ secrets.FIREBASE_APP_ID_PROD }}
           NODE_BINARY: ${{ env.NODE_BINARY }}
-          TARGET_ENVIRONMENT: ${{ github.event.inputs.environment || 'prod' }}
-        run: |
-          cd android
-          bundle exec fastlane "beta_${TARGET_ENVIRONMENT}"
+          TARGET_ENVIRONMENT: ${{ env.TARGET_ENVIRONMENT }}
+        run: bundle exec fastlane "beta_${TARGET_ENVIRONMENT}"
